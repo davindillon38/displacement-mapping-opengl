@@ -13,25 +13,17 @@ Source code: https://github.com/davindillon38/displacement-mapping-opengl
 Script
 [Screen shows launching the application]
 "Hello and welcome to my channel. For my first video, I'd like to show you this project I just finished for my graduate course in advanced graphics. I'm launching it now."
-[Application opens, ocean appears]
 "Alright, so This is an animated ocean surface I built in OpenGL."
 "The assignment was to do displacement mapping - basically moving vertices around to create 3D shapes. But when I started playing with it, I felt like it could do a good job of mimicking ocean waves."
-[Adjust one of the sliders while talking]
 "So I've got these controls here - speed is pretty self-explanatory - faster or slower wave motion."
 "Frequency controls how many waves you get - more choppy or more smooth and rolling."
 "The height slider makes the waves taller or flatter. See how that changes the amplitude?"
 
-[Let it run for a few seconds with good settings]
 "What's actually happening under the hood is pretty interesting. I'm using something called Gerstner waves - it's this mathematical function that ocean researchers came up with to simulate realistic wave motion."
-[Move camera closer to the surface]
 "Unlike just moving vertices straight up and down, Gerstner waves make the water move in these circular patterns, which is how real ocean waves actually work. that's what makes this nice rolling effect."
-[Pull back to show the full scene]
 "The cool part is this is all happening in real-time on the GPU. The vertex shader is calculating the wave positions for every single vertex, every frame. And I'm using multiple waves going in different directions, which creates this natural-looking randomness."
-[Maybe adjust height to show dramatic waves]
 "You can make it calm like this, or crank it up and get something more stormy."
-[Return to nice medium settings]
 "So yeah - I started with a displacement mapping assignment, and ended up with an ocean simulator. The code's on my GitHub (davindillon38) if anyone wants to check it out."
-[Let waves roll for 2-3 more seconds]
 "Thanks for watching!"
 ---
 
