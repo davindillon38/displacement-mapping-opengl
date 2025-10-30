@@ -30,7 +30,7 @@ Script
 [Maybe adjust height to show dramatic waves]
 "You can make it calm like this, or crank it up and get something more stormy."
 [Return to nice medium settings]
-"So yeah - started with a displacement mapping assignment, ended up with an ocean simulator. The code's on my GitHub if anyone wants to check it out."
+"So yeah - I started with a displacement mapping assignment, and ended up with an ocean simulator. The code's on my GitHub (davindillon38) if anyone wants to check it out."
 [Let waves roll for 2-3 more seconds]
 "Thanks for watching!"
 ---
