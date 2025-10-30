@@ -23,6 +23,8 @@ public:
    // Custom uniforms for displacement
    GLSLUniform* displacementScale = nullptr;
    GLSLUniform* time = nullptr;  // For animation
+   GLSLUniform* speedMultiplier = nullptr;
+   GLSLUniform* frequencyMultiplier = nullptr;
 };
 
 } // namespace Aftr

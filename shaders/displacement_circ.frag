@@ -1,5 +1,5 @@
 #version 420
-// Test Fragment Shader - Radial gradient from UVs (ignores heightmap)
+// Fragment Shader - Ocean Colors
 
 in vec4 Color;
 in vec3 VertexES;
@@ -8,6 +8,7 @@ in vec2 TexCoord;
 in vec4 ShadowCoord;
 in flat int ShadowMapShadingState;
 in float Height;
+in vec2 WorldPos2D;
 
 struct MaterialInfo
 {
@@ -26,44 +27,36 @@ layout ( binding = 1, std140 ) uniform LightInfo
    int NumLights;
 } Lights;
 
+layout ( binding = 1 ) uniform sampler2D HeightMap;
 uniform float Time = 0.0;
+uniform float SpeedMultiplier = 1.0;
+uniform float FrequencyMultiplier = 1.0;
 
 layout ( location = 0 ) out vec4 FragColor;
 
-layout ( binding = 0 ) uniform sampler2D Texture0;
-layout ( binding = 1 ) uniform sampler2D HeightMap;
-
-// HSV to RGB conversion
-vec3 hsv2rgb(vec3 c)
-{
-    vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
-    vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
-    return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
-}
-
 void main()
 {
-    // TEST: Create radial concentric circles from UVs
-    // This ignores the heightmap texture to test if UVs work
+    // Sample texture to match vertex shader - EXTREME VARIATION
+    vec2 uv = WorldPos2D * (0.1 * FrequencyMultiplier) + vec2(Time * 0.005 * SpeedMultiplier, Time * 0.003 * SpeedMultiplier);
+    float heightValue = texture(HeightMap, uv).r;
+    vec2 uv2 = WorldPos2D * (0.25 * FrequencyMultiplier) - vec2(Time * 0.003 * SpeedMultiplier, Time * 0.004 * SpeedMultiplier);
+    heightValue += texture(HeightMap, uv2).r * 0.7;
+    heightValue = heightValue / 1.7;
     
-    vec2 center = vec2(0.5, 0.5);
-    vec2 toCenter = TexCoord - center;
-    float dist = length(toCenter);  // Distance from center (0 = center, ~0.7 = corner)
+    // DRAMATICALLY increase contrast for peaks and valleys
+    heightValue = (heightValue - 0.5) * 4.0;  // Center around 0, moderate amplification
     
-    // Create multiple rings - multiply dist to get more circles
-    float hue = dist * 5.0 + Time * 0.1;  // 5.0 = number of color rings
-    hue = fract(hue);  // Wrap to 0-1
-    
-    float saturation = 0.8;
-    float value = 0.9;
-    
-    vec3 rainbowColor = hsv2rgb(vec3(hue, saturation, value));
-    
-    // Simple lighting (Blinn-Phong)
+    // Simple blue gradient - dark valleys to mid-blue peaks
+    vec3 darkBlue = vec3(0.0, 0.1, 0.3);    // Dark blue for valleys
+    vec3 midBlue = vec3(0.2, 0.4, 0.7);     // Mid blue for peaks
+    vec3 oceanColor = mix(darkBlue, midBlue, heightValue);
+        
+    // Blinn-Phong lighting
     vec3 n = normalize(NormalES);
     vec3 v = normalize(-VertexES);
     
-    vec3 ambient = Lights.GlobalAmbient.rgb * Material.Ka.rgb;
+    // Ambient lighting
+    vec3 ambient = Lights.GlobalAmbient.rgb * Material.Ka.rgb * oceanColor * 0.5;
     vec3 diffuse = vec3(0.0);
     vec3 specular = vec3(0.0);
     
@@ -73,12 +66,17 @@ void main()
         vec3 h = normalize(v + lightDir);
         
         float diff = max(dot(n, lightDir), 0.0);
-        diffuse += diff * Lights.Irgba[i].rgb * Material.Kd.rgb * rainbowColor;
+        diffuse += diff * Lights.Irgba[i].rgb * Material.Kd.rgb * oceanColor;
         
         float spec = pow(max(dot(n, h), 0.0), Material.SpecularCoeff);
         specular += spec * Lights.Irgba[i].rgb * Material.Ks.rgb;
     }
     
     vec3 finalColor = ambient + diffuse + specular;
+    
+    // Add minimum brightness
+    float minBrightness = 0.3;
+    finalColor = max(finalColor, oceanColor * minBrightness);
+    
     FragColor = vec4(finalColor, 1.0);
 }

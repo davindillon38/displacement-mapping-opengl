@@ -151,25 +151,28 @@ void Aftr::GLViewdisplacement_grid::loadMap()
    std::vector< std::string > skyBoxImageNames;
    skyBoxImageNames.push_back( ManagerEnvironmentConfiguration::getSMM() + "/images/skyboxes/sky_mountains+6.jpg" );
 
+
    {
-      float ga = 0.1f;
-      ManagerLight::setGlobalAmbientLight( aftrColor4f( ga, ga, ga, 1.0f ) );
-      WOLight* light = WOLight::New();
-      light->isDirectionalLight( true );
-      light->setPosition( Vector( 0, 0, 100 ) );
-      light->getModel()->setDisplayMatrix( Mat4::rotateIdentityMat( { 0, 1, 0 }, 90.0f * Aftr::DEGtoRAD ) );
-      light->setLabel( "Light" );
-      worldLst->push_back( light );
+       float ga = 0.3f;  // Increased ambient (was 0.1, now 0.3 for softer shadows)
+       ManagerLight::setGlobalAmbientLight(aftrColor4f(ga, ga, ga, 1.0f));
+       WOLight* light = WOLight::New();
+       light->isDirectionalLight(true);
+       light->setPosition(Vector(0, 0, 200));  // Higher (was 100, now 200)
+       // Remove rotation - keep light pointing straight down
+       // light->getModel()->setDisplayMatrix( Mat4::rotateIdentityMat( { 0, 1, 0 }, 90.0f * Aftr::DEGtoRAD ) );
+       light->setLabel("Light");
+       worldLst->push_back(light);
    }
 
    {
-      WO* wo = WOSkyBox::New( skyBoxImageNames.at( 0 ), this->getCameraPtrPtr() );
-      wo->setPosition( Vector( 0, 0, 0 ) );
-      wo->setLabel( "Sky Box" );
-      wo->renderOrderType = RENDER_ORDER_TYPE::roOPAQUE;
-      worldLst->push_back( wo );
+       WO* wo = WOSkyBox::New(skyBoxImageNames.at(0), this->getCameraPtrPtr());
+       wo->setPosition(Vector(0, 0, 0));
+       // Rotate skybox to put sun overhead
+       wo->setDisplayMatrix(Mat4::rotateIdentityMat({ 1, 0, 0 }, -90.0f * Aftr::DEGtoRAD));
+       wo->setLabel("Sky Box");
+       wo->renderOrderType = RENDER_ORDER_TYPE::roOPAQUE;
+       worldLst->push_back(wo);
    }
-
    {
       this->gulfstream = WO::New( ManagerEnvironmentConfiguration::getSMM() + "models/Aircraft/Gulfstream3/G3.obj", Vector(1.0f, 1.0f, 1.0f ), MESH_SHADING_TYPE::mstAUTO );
       this->gulfstream->setPosition( Vector( 0, 0, 10 ) );
@@ -232,9 +235,10 @@ void Aftr::GLViewdisplacement_grid::loadMap()
                    return;
                }
                this->displacementShader = shader;
+               this->orbit_gui.displacementShader = shader;
 
                // Load heightmap texture
-               std::string heightmapPath = ManagerEnvironmentConfiguration::getSMM() + "/images/concentric_circles.jpg";
+               std::string heightmapPath = ManagerEnvironmentConfiguration::getLMM() + "/images/clouds_seemless.png";
                auto heightmapOpt = ManagerTex::loadTexAsync(heightmapPath);
                if (!heightmapOpt.has_value())
                {

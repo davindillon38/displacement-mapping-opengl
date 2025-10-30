@@ -1,238 +1,133 @@
-# YouTube Video Script - Displacement Mapped Grid
+# Ocean Displacement Mapping - YouTube Video Script
 
 ## Video Title
-"Real-time Displacement Mapping with Animated Rainbow Waves in OpenGL"
+"Real-Time Ocean Waves with OpenGL Displacement Mapping | Computer Graphics Project"
 
-## Video Length Target
-3-5 minutes
+## Video Description
+Demonstrating texture-based displacement mapping to create animated ocean waves in real-time using OpenGL and GLSL shaders. This project showcases vertex shader displacement, dynamic normal calculation, and procedural animation.
 
----
-
-## INTRO (15-30 seconds)
-
-**[Show final result - animated rainbow concentric circles]**
-
-"Hi! Today I'm showing my displacement-mapped grid project for Computer Graphics class. This is a flat plane that becomes a 3D surface using GPU shader programming, with animated rainbow colors flowing through concentric wave patterns."
+Source code: https://github.com/davindillon38/displacement-mapping-opengl
 
 ---
 
-## SECTION 1: What is Displacement Mapping? (30 seconds)
+## Script
 
-**[Show side-by-side: flat plane → displaced 3D surface]**
+### Introduction (0:00 - 0:20)
+**[Show ocean waves animating]**
 
-"Displacement mapping is a technique where we modify vertex positions in the vertex shader to create 3D geometry from flat surfaces. Unlike normal mapping which just fakes lighting, displacement mapping actually moves the vertices to create real geometry."
+"Hi! I'm Davin, and today I'm presenting my displacement mapping project for Computer Graphics. This demo shows a real-time animated ocean surface created entirely on the GPU using OpenGL vertex shaders."
 
-**[Point to wireframe view showing vertex movement]**
+**[Quick rotation around the ocean]**
 
-"Here you can see the vertices actually being moved up and down to create the wave pattern."
+### Technical Overview (0:20 - 1:00)
+**[Split screen: code + visual result]**
 
----
+"The core technique here is displacement mapping - where we modify vertex positions in the vertex shader based on a height texture. Instead of just coloring pixels differently, we're actually moving the geometry."
 
-## SECTION 2: The Technical Implementation (60-90 seconds)
+**[Highlight vertex shader code]**
 
-**[Show code snippets on screen]**
+"I'm using a seamless cloud texture as a noise source. The shader samples this texture at two different frequencies - a larger scale for the main wave patterns, and a smaller scale for surface detail."
 
-"The magic happens in two GLSL shaders:
+**[Show texture side by side with result]**
 
-**Vertex Shader:**
-- Takes each vertex's UV coordinates
-- Calculates distance from the center point
-- Uses that distance to compute a height value
-- Moves the vertex up or down in the Z direction
+"By scrolling the texture coordinates over time in different directions, we get this organic rolling wave motion."
 
-**Fragment Shader:**
-- Uses the same distance calculation
-- Converts it to a rainbow color using HSV color space
-- Adds time to create the animation
-- Applies Blinn-Phong lighting for realistic shading"
+### Live Controls Demo (1:00 - 1:40)
+**[Show GUI controls on screen]**
 
-**[Show the key code sections briefly]**
+"The system has three main parameters you can adjust in real-time:"
 
-```glsl
-// Distance from center creates concentric pattern
-vec2 toCenter = UV - vec2(0.5, 0.5);
-float dist = length(toCenter);
+**[Adjust Height slider]**
 
-// Displace vertex height
-displacedPosition.z += height * 2.0;
+"Height controls the wave amplitude - how tall the peaks are and how deep the valleys go."
 
-// Animate colors over time
-float hue = dist * 5.0 + Time * 0.1;
-```
+**[Reset, then adjust Frequency slider]**
 
----
+"Frequency changes the wave density - higher values give you more, tighter waves, while lower values create broader swells."
 
-## SECTION 3: Key Features (45 seconds)
+**[Reset, then adjust Speed slider]**
 
-**[Show each feature as you mention it]**
+"And Speed controls how fast the waves animate. You can make them gentle and slow, or turn them into a stormy sea."
 
-"This project includes several cool features:
+**[Show combination of parameters]**
 
-1. **Procedural Generation** - The pattern is generated mathematically in real-time, no textures needed
+"You can combine these to create different ocean conditions - from calm water to choppy seas."
 
-2. **Real-time Animation** - The rainbow colors cycle continuously at 60 FPS
+### Technical Deep Dive (1:40 - 2:30)
+**[Show vertex shader code close-up]**
 
-3. **Custom Shader Class** - I created a GLSLShaderDisplacement class to manage the shader
+"Let me walk through the key technical details. In the vertex shader, I sample the cloud texture at the world position of each vertex."
 
-4. **Smooth Lighting** - Blinn-Phong lighting model shows off the 3D geometry
+**[Highlight specific code sections as you explain]**
 
-5. **Concentric Waves** - Five color rings flow outward from the center"
+"I'm actually doing two texture samples at different scales - this gives us both large wave patterns and fine surface detail. The heights from both samples are combined and then amplified and centered around zero."
 
----
+**[Show normal calculation]**
 
-## SECTION 4: Customization (30 seconds)
+"For proper lighting, I calculate normals by sampling the height at neighboring points and using finite differences to compute the tangent vectors. This ensures the lighting responds correctly to the wave shape."
 
-**[Show parameter changes in real-time]**
+**[Show fragment shader]**
 
-"The effect is easily customizable by changing just a few numbers:
+"In the fragment shader, I apply a simple blue gradient based on height - darker blue in the valleys, lighter blue at the peaks. The Blinn-Phong lighting model adds realistic shading with an overhead directional light."
 
-- Number of rings: 3, 5, or 10 concentric circles
-- Animation speed: slower or faster color cycling  
-- Displacement height: subtle ripples or tall waves
-- Color saturation: pastel or vibrant"
+### Visual Results (2:30 - 2:50)
+**[Cinematic camera movements showing the ocean]**
 
-**[Demo: show 3 rings, then 10 rings, then change animation speed]**
+"The result is a convincing ocean surface with smooth, rolling waves. The lighting properly follows the wave geometry, creating highlights on peaks and shadows in troughs."
 
----
+**[Close-up of wave detail]**
 
-## SECTION 5: Technical Details (30 seconds)
+"The dual-layer sampling creates nice surface variation - you get both the large wave forms and the smaller ripples."
 
-**[Show Visual Studio / project structure]**
+### Performance (2:50 - 3:10)
+**[Show FPS counter if visible]**
 
-"Built using:
-- AftrBurner Engine (OpenGL 4.3)
-- C++ for scene management
-- GLSL for vertex and fragment shaders
-- 400x400 vertex grid (160,000 vertices)
-- Runs at 60 FPS"
+"Performance-wise, this runs at 60 FPS easily, even on integrated graphics. By doing all the heavy computation in the vertex shader rather than per-pixel, and using a single texture lookup, it's very efficient."
 
-**[Show file structure briefly]**
+**[Show wire frame overlay briefly]**
 
----
+"The grid mesh has about 40,000 vertices, and each one is being displaced every frame based on the animated texture samples."
 
-## CONCLUSION (15-30 seconds)
+### Conclusion (3:10 - 3:30)
+**[Final beauty shot of ocean]**
 
-**[Return to showing the animated effect]**
+"This project demonstrates several key graphics techniques: displacement mapping, procedural animation, dynamic normal calculation, and shader-based real-time rendering."
 
-"This project demonstrates displacement mapping, procedural generation, shader programming, and real-time animation. The result is a hypnotic flowing rainbow wave that's all generated on the GPU."
+**[Show GitHub link on screen]**
 
-**[Zoom out to show full scene with plane, skybox, etc]**
+"The full source code, including the GLSL shaders and C++ setup, is available on my GitHub. Link in the description."
 
-"Thanks for watching! Code and documentation available in the description."
+**[Fade out with waves]**
+
+"Thanks for watching! If you have questions about the implementation, feel free to leave a comment."
 
 ---
 
-## OPTIONAL B-ROLL FOOTAGE
+## B-Roll Suggestions
+- Close-up shots of individual wave peaks
+- Camera flying low over the water surface
+- Wireframe overlay showing vertex displacement
+- Side-by-side comparison with flat plane
+- Texture visualization alongside result
+- Parameter adjustment montage
 
-- Wireframe view showing vertex displacement
-- Side view showing 3D height
-- Top-down view showing concentric pattern
-- Close-up of color transitions
-- Code editor showing shader files
-- Visual Studio compilation
-- Parameter tweaking demonstrations
+## On-Screen Graphics
+- Title card with project name
+- Code snippets at relevant moments
+- Parameter labels when adjusting sliders
+- GitHub repository link
+- Performance metrics (FPS, vertex count)
 
----
+## Video Length
+Target: 3-3.5 minutes
 
-## VIDEO RECORDING TIPS
+## Music Suggestions
+- Calm, oceanic ambient music
+- Low volume to not overpower narration
+- Fade out during technical sections
 
-### Software Needed
-- **OBS Studio** (free) - for screen recording
-- **Audacity** (free) - for audio recording/cleanup
-- **DaVinci Resolve** (free) - for video editing
-- OR just use **Windows Game Bar** (Win+G) for simple capture
-
-### Recording Setup
-1. **Set resolution to 1920x1080**
-2. **Record at 60 FPS** to show smooth animation
-3. **Enable audio** for voice narration
-4. **Use Push-to-Talk** if recording live commentary
-
-### What to Record
-1. **Full-screen running application** (3-4 different angles/zoom levels)
-2. **Code sections** in Visual Studio (zoom in so text is readable)
-3. **File structure** in Explorer
-4. **Wireframe mode** if available (shows displacement geometry)
-
-### Editing Tips
-- Add **text overlays** for key points
-- Use **slow motion** (50% speed) when showing code
-- Add **arrows/circles** to highlight important parts
-- Include **background music** (copyright-free) at low volume
-- Add **chapter markers** for each section
-
-### Audio Tips
-- Record in a **quiet room**
-- Use a **decent microphone** (or phone headset)
-- Speak **clearly and at moderate pace**
-- Record **script separately** if nervous (easier to edit)
-- Remove **"um"s and long pauses** in editing
-
----
-
-## YOUTUBE DESCRIPTION TEMPLATE
-
-```
-Real-time Displacement Mapping with Animated Rainbow Waves
-
-A computer graphics project demonstrating GPU-accelerated displacement mapping 
-with procedurally-generated animated patterns. Built using OpenGL 4.3 and GLSL 
-shaders in the AftrBurner Engine.
-
-⭐ Key Features:
-• Real-time vertex displacement on GPU
-• Procedural concentric wave generation
-• Animated rainbow color cycling
-• Blinn-Phong lighting model
-• 60 FPS performance with 160k vertices
-
-🛠️ Technologies:
-• C++ / OpenGL 4.3
-• GLSL (Vertex & Fragment Shaders)
-• AftrBurner Engine
-• Visual Studio 2022
-
-📚 Project Documentation:
-[Link to GitHub or documentation]
-
-🎓 Course: Computer Graphics - Fall 2025
-Ohio University
-
-#OpenGL #ComputerGraphics #GLSL #DisplacementMapping #ShaderProgramming 
-#GameDev #GraphicsProgramming
-```
-
----
-
-## YOUTUBE THUMBNAIL IDEAS
-
-1. **Split screen**: Flat plane | 3D displaced surface
-2. **Close-up**: Rainbow concentric circles with "DISPLACEMENT MAPPING" text
-3. **Before/After**: Gray flat grid → Colorful waves
-4. **Code + Result**: Shader code on left, rendered output on right
-5. **Action shot**: Mid-animation with motion blur effect
-
-### Thumbnail Text Options
-- "GPU DISPLACEMENT MAPPING"
-- "VERTEX SHADERS IN ACTION"  
-- "PROCEDURAL WAVES"
-- "REAL-TIME 3D"
-- "160K VERTICES • 60 FPS"
-
----
-
-## BACKUP SCRIPT (If Nervous)
-
-Just record yourself saying:
-
-"This is my displacement mapping project. [pause] 
-
-It takes a flat plane and turns it into a 3D surface using vertex shaders. [pause]
-
-The rainbow colors animate in real-time based on distance from the center. [pause]
-
-Everything runs at 60 frames per second on the GPU. [pause]
-
-The pattern is generated procedurally - no textures required."
-
-**Then add text overlays in editing to explain technical details!**
+## Technical Setup
+- 1920x1080 resolution
+- 60 FPS recording
+- Screen capture with OBS
+- Voiceover recorded separately for clarity
